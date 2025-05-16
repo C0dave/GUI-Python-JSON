@@ -8,7 +8,6 @@ def return_main():
     return main_window()    
 
 def main_window():
-    lib.loser_of_week()
     lib.check_date()
     if not os.path.exists("person.json"):
         lib.json_data() 
