@@ -87,9 +87,9 @@ def loser_of_week():
             with open("person.json", "r", encoding="utf-8") as file:
                 data = json.load(file)
             for i in range(len(data)):
-                x = 0
+                valid = False
                 if data[subject[i]]["num_de_faltas"] == 0:
-                    if i == 4 and x == 0:
+                    if i == 4 and valid == False:
                         messagebox.showinfo("Perdedor de la semana", "No hay perdedor de la semana")
                         print(Fore.GREEN + ("✅ No hay perdedores esta semana"))
                     else:
@@ -98,7 +98,7 @@ def loser_of_week():
                     if data[subject[i]]["num_de_faltas"] == max(data[subject[i]]["num_de_faltas"] for i in range(len(subject))):
                         messagebox.showinfo("Perdedor de la semana",f"El perdedor de la semana es {subject[i]} con {data[subject[i]]['num_de_faltas']} falta/s")
                         print(Fore.GREEN + "\n✅ El perdedor de la semana es ", subject[i], "con", data[subject[i]]["num_de_faltas"], "falta/s")
-                        return x == 1
+                        return valid == True
         else:
             print(Fore.YELLOW + "\n⚠️ No es fin de semana, no se puede determinar el perdedor de la semana")
             return
