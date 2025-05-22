@@ -3,6 +3,7 @@ import ttkbootstrap as ttk
 import tkinter.messagebox as messagebox
 import datetime
 import json
+from PIL import Image, ImageTk
 from colorama import Fore, init
 import os
 
@@ -131,13 +132,32 @@ def ask():
 
 def add_falta(table):
     global textbox, root1
-    root1 = ttk.Window()
+    root1 = tk.Toplevel()
     root1.title("Añadir falta")
-    root1.geometry("500x300")
+    root1.geometry("700x500")
     root1.resizable(False, False)
 
-    label = tk.Label(root1, text="Redactar falta", font=("Arial", 16))
+    label = tk.Label(root1, text="Elige", font=("Arial", 16))
     label.pack(pady=20)
+
+    frame_buttons = tk.Frame(root1)
+    frame_buttons.pack(pady=10)
+
+    imagen1 = Image.open("imagen1.jpg")
+    imagen1 = imagen1.resize((100, 100))
+    imagen1 = ImageTk.PhotoImage(imagen1)
+    happy_face = tk.Button(root1, image=imagen1)
+    happy_face.image = imagen1
+    happy_face.pack(side="top", anchor="center", padx=10)
+
+    imagen2 = Image.open("imagen2.png")
+    imagen2 = imagen2.resize((100, 100))
+    imagen2 = ImageTk.PhotoImage(imagen2)
+    sad_face = tk.Button(root1, image=imagen2)
+    sad_face.image = imagen2
+    sad_face.pack(side="top", anchor="center",padx=10)
+    frame_buttons.pack(pady=10)
+    frame_buttons.pack_forget()
 
     textbox = tk.Text(root1, height=10, width=50)
     textbox.pack(pady=10)

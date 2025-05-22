@@ -16,9 +16,9 @@ def main_window():
     global root
     root = ttk.Window(themename="darkly")
     root.title("Ventana Principal")
-    root.geometry("700x600")
+    root.geometry("700x600")    
     root.resizable(False, False)
-    label = ttk.Label(root, text="Bienvenido a faltas semanales", font=(30), anchor="center")
+    label = ttk.Label(root, text="Bienvenido a faltas semanales", font=("", 20), anchor="center")
     label.pack(pady=20)
 
     style = Style()
@@ -35,6 +35,9 @@ def main_window():
     for person in data:
         table.insert("", "end", values=data[person]["name"])
     table.pack(pady=20)
+
+    button = ttk.Button(root, text="Añadir falta", command=lambda:lib.add_falta(table))
+    button.pack(pady=10)
 
     root.mainloop()
 
