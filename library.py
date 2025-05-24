@@ -89,7 +89,7 @@ def loser_of_week():
             for i in range(len(data)):
                 x = 0
                 if data[subject[i]]["num_de_faltas"] == 0:
-                    if i == 4:
+                    if i == 4 and x == 0:
                         messagebox.showinfo("Perdedor de la semana", "No hay perdedor de la semana")
                         print(Fore.GREEN + ("✅ No hay perdedores esta semana"))
                     else:
@@ -98,10 +98,7 @@ def loser_of_week():
                     if data[subject[i]]["num_de_faltas"] == max(data[subject[i]]["num_de_faltas"] for i in range(len(subject))):
                         messagebox.showinfo("Perdedor de la semana",f"El perdedor de la semana es {subject[i]} con {data[subject[i]]['num_de_faltas']} falta/s")
                         print(Fore.GREEN + "\n✅ El perdedor de la semana es ", subject[i], "con", data[subject[i]]["num_de_faltas"], "falta/s")
-                        if i == 5:
-                            break 
-                        else:
-                            continue    
+                        return x == 1
         else:
             print(Fore.YELLOW + "\n⚠️ No es fin de semana, no se puede determinar el perdedor de la semana")
             return
