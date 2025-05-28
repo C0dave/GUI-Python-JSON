@@ -17,37 +17,37 @@ def json_data():
     person = {
          "Alejandro": {
                   "faltas": [],
-                  "dia": [],
+                  "day": [],
                   "emoji": [],
                   "name": "Alejandro"        
          },
          "Santiago": {
                   "faltas": [],
-                  "dia": [],
+                  "day": [],
                   "emoji": [],
                   "name": "Santiago"
          },
          "Mateo": {
                   "faltas": [],
-                  "dia": [],
+                  "day": [],
                   "emoji": [],
                   "name": "Mateo"
          },
          "Mateo": {
                   "faltas": [],
-                  "dia": [],
+                  "day": [],
                   "emoji": [],
                   "name": "Mateo"
          },
          "Mirian": {
                   "faltas": [],
-                  "dia": [],
+                  "day": [],
                   "emoji": [],
                   "name": "Mirian"
          },
          "Jonathan": {
                   "faltas": [],
-                  "dia": [],
+                  "day": [],
                   "emoji": [],
                   "name": "Jonathan"
          }
@@ -77,7 +77,7 @@ def add_to_table(table, selected_row, name):
       with open("person.json", "r", encoding="utf-8") as file:
             data = json.load(file)
             data[name]["faltas"].append(fault_details())
-            data[name]["dia"].append(date())
+            data[name]["day"].append(date())
             data[name]["emoji"].append(emoji)
       with open("person.json", "w", encoding="utf-8") as file:
             json.dump(data, file, indent=4, ensure_ascii=False)
@@ -89,15 +89,15 @@ def ask(table, selected_row, name):
                  answer = messagebox.askyesno("Felicitacion", f"¿Estás seguro de que quieres añadir una felicitacion: {fault_details()}?")
                  if answer:
                         messagebox.showinfo("Info", "Felicitacion añadida con éxito.")
-                        textbox.delete("1.0", tk.END)
                         add_to_table(table, selected_row, name)
+                        textbox.delete("1.0", tk.END)
                         return
             else:
                  answer = messagebox.askyesno("Falta", f"¿Estás seguro de que quieres añadir una falta: {fault_details()}?")
                  if answer:
                         messagebox.showinfo("Info", "Falta añadida con éxito.")
-                        textbox.delete("1.0", tk.END)
                         add_to_table(table, selected_row, name)
+                        textbox.delete("1.0", tk.END)
                         return
       else:
             messagebox.showerror("Error", "Por favor, escribe una falta o felicitacion antes de continuar.")

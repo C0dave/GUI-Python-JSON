@@ -4,6 +4,7 @@ import library as lib
 import json
 import os
 from ttkbootstrap import Style
+import tkinter.messagebox as messagebox
 
 def launch_terminal(name):
     root.withdraw() 
@@ -28,6 +29,9 @@ def row_selection(event):
     
 def main_window():
     global root, table
+    if lib.date() == 6 or lib.date() == 7:
+        messagebox.showinfo("Información", "Hoy es fin de semana, no se pueden registrar faltas ni felicitaciones ")
+        return
     if not os.path.exists("person.json"):
         lib.json_data() 
     root = ttk.Window()
@@ -44,11 +48,20 @@ def main_window():
         table.column(col, anchor="center", width=100)
     table.pack(pady=20)
 
-    with open("person.json", "r") as file:
+    with open("person.json", "r", encoding="utf-8") as file:
         data = json.load(file)
     for person in data:
         table.insert("", "end", iid=person, values=(data[person]["name"], "", "", "", "", ""))
-    table.pack(pady=20)
+
+    for p in data:
+        for d, e in zip(data[p]["day"], data[p]["emoji"]):
+            if d == []:
+                continue
+            value = list(table.item(p, "values"))
+            value[d] = e
+            table.item(p, values=value)
+
+    table.pack(padx=20)
 
     table.bind("<ButtonRelease-1>", row_selection)
 
