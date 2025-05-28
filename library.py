@@ -6,7 +6,7 @@ import json
 from colorama import Fore, init
 from PIL import Image, ImageTk
 import os
-import script as sc
+import script 
 
 
 subject = ["Alejandro", "Santiago", "Mateo", "Mirian", "Jonathan"]
@@ -54,12 +54,40 @@ def json_data():
         print(Fore.YELLOW + "\n⚠️ El archivo JSON ya existe")
    
 def date():
-   return datetime.datetime.now().strftime("%A %d de %B de %Y")
- 
+      day = datetime.datetime.now()
+      to_int = day.weekday() + 1
+      return to_int
+
 def fault_details():
    return textbox.get("1.0", tk.END).strip()
 
-def add_falta():        
+def add_to_table(table, selected_row):
+      info = table.item(selected_row, "values")
+      values = list(info)
+      values[date()] = "semanal"
+      table.item(selected_row, values=values)
+
+def ask(table, selected_row):
+      if fault_details() != "":
+            if value.get() is True:
+                 answer = messagebox.askyesno("Felicitacion", f"¿Estás seguro de que quieres añadir una felicitacion: {fault_details()}?")
+                 if answer:
+                        messagebox.showinfo("Info", "Felicitacion añadida con éxito.")
+                        textbox.delete("1.0", tk.END)
+                        add_to_table(table, selected_row)
+                        return
+            else:
+                 answer = messagebox.askyesno("Falta", f"¿Estás seguro de que quieres añadir una falta: {fault_details()}?")
+                 if answer:
+                        messagebox.showinfo("Info", "Falta añadida con éxito.")
+                        textbox.delete("1.0", tk.END)
+                        add_to_table(table, selected_row)
+                        return
+      else:
+            messagebox.showerror("Error", "Por favor, escribe una falta o felicitacion antes de continuar.")
+            return
+
+def terminal(table, selected_row):        
     global textbox, root, value, photo, photo2
     root = ttk.Toplevel()
     root.title("Añadir falta")
@@ -88,7 +116,7 @@ def add_falta():
     textbox = tk.Text(root, height=10, width=50)
     textbox.pack(pady=10)
 
-    boton = tk.Button(root, text="Añadir", command=lambda:())
+    boton = tk.Button(root, text="Añadir", command=lambda: ask(table=table, selected_row=selected_row))
     boton.pack(pady=10)
 
     root.wait_window(root)

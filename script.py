@@ -5,8 +5,10 @@ import json
 import os
 from ttkbootstrap import Style
 
-def return_main():
-    return main_window()  
+def launch_terminal():
+    root.withdraw() 
+    lib.terminal(table, selected_row) 
+    root.deiconify()
 
 def style():
     style = Style(theme="darkly")
@@ -14,9 +16,17 @@ def style():
     style.configure("TLabel", font=("Arial", 14), padding=10)
     style.configure("Treeview", rowheight=40)
     return style
+
+def row_selection(event):
+    global selected_row
+    selected_row = table.focus()
+    if selected_row:
+        values = table.item(selected_row, "values")
+        print(f"Fila seleccionada: {values}")
+        launch_terminal()
     
 def main_window():
-    global root
+    global root, table
     if not os.path.exists("person.json"):
         lib.json_data() 
     root = ttk.Window()
@@ -36,11 +46,10 @@ def main_window():
     with open("person.json", "r") as file:
         data = json.load(file)
     for person in data:
-        table.insert("", "end", values=data[person]["name"])
+        table.insert("", "end", iid=person, values=(data[person]["name"], "", "", "", "", ""))
     table.pack(pady=20)
 
-    button = ttk.Button(root, text="Añadir falta", command=lambda:(root.withdraw(), lib.add_falta(), root.deiconify()))
-    button.pack(pady=10)
+    table.bind("<ButtonRelease-1>", row_selection)
 
     root.mainloop()
 
