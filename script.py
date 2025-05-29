@@ -5,25 +5,26 @@ import json
 import os
 from ttkbootstrap import Style
 
-def launch_terminal():
+def launch_terminal(name):
     root.withdraw() 
-    lib.terminal(table, selected_row) 
+    lib.terminal(table, selected_row, name) 
     root.deiconify()
 
 def style():
     style = Style(theme="darkly")
-    style.configure("TButton", font=("Arial", 12), padding=10)
-    style.configure("TLabel", font=("Arial", 14), padding=10)
-    style.configure("Treeview", rowheight=40)
+    style.configure("TButton", font=("", 12), padding=10)
+    style.configure("TLabel", font=("", 12), padding=10)
+    style.configure("Treeview", font=("", 16), rowheight=50)
     return style
 
 def row_selection(event):
     global selected_row
     selected_row = table.focus()
     if selected_row:
-        values = table.item(selected_row, "values")
-        print(f"Fila seleccionada: {values}")
-        launch_terminal()
+        name = table.item(selected_row, "values")
+        name = name[0]
+        print(f"Fila seleccionada: {name}")
+        launch_terminal(name)
     
 def main_window():
     global root, table
@@ -37,7 +38,7 @@ def main_window():
     label = ttk.Label(root, text="Bienvenido a faltas semanales", font=("", 20), anchor="center")
     label.pack(pady=20)
 
-    table = ttk.Treeview(root, columns=("Nombre", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes"), show="headings", height=10)
+    table = ttk.Treeview(root, columns=("Nombre", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes"), show="headings")
     for col in table["columns"]:
         table.heading(col, text=col)
         table.column(col, anchor="center", width=100)
