@@ -68,34 +68,38 @@ def fault_details():
    return textbox.get("1.0", tk.END).strip()
 
 def add_to_table(table, selected_row, name):
-      init(autoreset=True)
-      info = table.item(selected_row, "values")
-      values = list(info)
-      emoji = "😃" if value.get() else "😞"
-      values[date()] = emoji
-      table.item(selected_row, values=values)
       with open("person.json", "r", encoding="utf-8") as file:
             data = json.load(file)
+      if data[name]["day"].count(date()):
+            messagebox.showwarning("Advertencia", "⚠️ Ya existe una falta o felicitacion para este dia")
+            return
+      else:
+            init(autoreset=True)
+            info = table.item(selected_row, "values")
+            values = list(info)
+            emoji = "😃" if value.get() == True else "😞"
+            values[date()] = emoji
+            table.item(selected_row, values=values)
             data[name]["faltas"].append(fault_details())
             data[name]["day"].append(date())
             data[name]["emoji"].append(emoji)
-      with open("person.json", "w", encoding="utf-8") as file:
-            json.dump(data, file, indent=4, ensure_ascii=False)
-      print(Fore.GREEN + "✅ Datos añadidos a la tabla y guardados en el archivo JSON")
+            with open("person.json", "w", encoding="utf-8") as file:
+                  json.dump(data, file, indent=4, ensure_ascii=False)
+            print(Fore.GREEN + "✅ Datos añadidos a la tabla y guardados en el archivo JSON")
+            messagebox.showinfo("Info", "Felicitacion añadida con éxito." if value.get() == True else "Falta añadida con éxito.")
+
 
 def ask(table, selected_row, name):
       if fault_details() != "":
-            if value.get() is True:
+            if value.get() == True:
                  answer = messagebox.askyesno("Felicitacion", f"¿Estás seguro de que quieres añadir una felicitacion: {fault_details()}?")
                  if answer:
-                        messagebox.showinfo("Info", "Felicitacion añadida con éxito.")
                         add_to_table(table, selected_row, name)
                         textbox.delete("1.0", tk.END)
                         return
             else:
                  answer = messagebox.askyesno("Falta", f"¿Estás seguro de que quieres añadir una falta: {fault_details()}?")
                  if answer:
-                        messagebox.showinfo("Info", "Falta añadida con éxito.")
                         add_to_table(table, selected_row, name)
                         textbox.delete("1.0", tk.END)
                         return
