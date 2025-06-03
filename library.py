@@ -73,29 +73,40 @@ def json_save(name, type):
       data[name]["day"].append(date())
       data[name]["emoji"].append(emoji)
       print(type)
+def json_del(name, index):
+      data[name]["day"].pop(index)
+      data[name]["type"].pop(index)
+      data[name]["faltas"].pop(index)
+      data[name]["emoji"].pop(index)
 
 def add_to_table(table, selected_row, name):
       global data, emoji
+      init(autoreset=True)
+      info = table.item(selected_row, "values")
+      values = list(info)
+      emoji = "😃" if value.get() == True else "😞"
+      values[date()] = emoji
       with open("person.json", "r", encoding="utf-8") as file:
             data = json.load(file)
       if data[name]["day"].count(date()):
-            messagebox.showwarning("Advertencia", "⚠️ Ya existe una falta o felicitacion para este dia")
-            return
+            index = data[name]["day"].index(date())
+            answer = messagebox.askyesno("Advertencia", f"Ya existe una felicitacion. Detalles:\nTipo: Felicitacion({data[name]["emoji"][index]})\nRedaccion: {data[name]["faltas"][index]}\n¿Quieres reemplazarla?" if data[name]["type"][index] else f"Ya existe una falta. Detalles:\nTipo: Falta({data[name]["emoji"][index]})\nRedaccion: {data[name]["faltas"][index]}\n¿Quieres reemplazarla?")
+            if answer:
+                  json_del(name, index)
+                  json_save(name, type= 1 if value.get() == True else -1)
+                  messagebox.showinfo("Info", "Felicitacion reemplazada!" if data[name]["emoji"][index] else "Falta reemplazada!")
+                  table.item(selected_row, values=values)
+            else:
+                  messagebox.showerror("Error", "Accion interrupida por el usuario")
       else:
-            init(autoreset=True)
-            info = table.item(selected_row, "values")
-            values = list(info)
-            emoji = "😃" if value.get() == True else "😞"
-            values[date()] = emoji
             if emoji == "😃": 
-                 json_save(name, type=1)
+                  json_save(name, type=1)
             else:
                   json_save(name, type=-1)
             table.item(selected_row, values=values)
 
-            with open("person.json", "w", encoding="utf-8") as file:
-                  json.dump(data, file, indent=4, ensure_ascii=False)
-            print(Fore.GREEN + "✅ Datos añadidos a la tabla y guardados en el archivo JSON")
+      with open("person.json", "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4, ensure_ascii=False)
             messagebox.showinfo("Info", "Felicitacion añadida con éxito." if value.get() == True else "Falta añadida con éxito.")
 
 def ask(table, selected_row, name):
