@@ -4,9 +4,10 @@ import tkinter.messagebox as messagebox
 import datetime
 import json
 from colorama import Fore, init
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageSequence
 import os
 import script 
+
 
 
 subject = ["Alejandro", "Santiago", "Mateo", "Mirian", "Jonathan"]
@@ -33,12 +34,6 @@ def json_data():
                   "emoji": [],
                   "name": "Mateo"
          },
-         "Mateo": {
-                  "faltas": [],
-                  "day": [],
-                  "emoji": [],
-                  "name": "Mateo"
-         },
          "Mirian": {
                   "faltas": [],
                   "day": [],
@@ -58,7 +53,7 @@ def json_data():
             print(Fore.GREEN + "✅ Archivo JSON creado con éxito")
     else:
         print(Fore.YELLOW + "\n⚠️ El archivo JSON ya existe")
-   
+        
 def date():
       day = datetime.datetime.now()
       to_int = day.weekday() + 1
@@ -107,36 +102,47 @@ def ask(table, selected_row, name):
             messagebox.showerror("Error", "Por favor, escribe una falta o felicitacion antes de continuar.")
             return
 
+
+def animate_happy(happy, index=0):
+      button1.configure(image=happy[index])
+      root.after(25, animate_happy, happy, (index + 1) % len(happy))
+
+def animate_sad(sad, index=0):
+     button2.configure(image=sad[index])
+     index = (index + 1) % len(sad)
+     root.after(25, animate_sad, sad, index)
+
+      
 def terminal(table, selected_row, name):        
-    global textbox, root, value, photo, photo2
-    root = ttk.Toplevel()
-    root.title("Añadir falta")
-    root.geometry("700x500")
-    root.resizable(False, False)
+      global textbox, root, value, button1, button2, happy, sad
+      root = ttk.Toplevel()
+      root.title("Añadir falta")
+      root.geometry("700x500")
+      root.resizable(False, False)
 
-    label = ttk.Label(root, text="Elige tipo de cara:", font=("Arial", 16))
-    label.pack(pady=20)
+      ttk.Label(root, text="Elige tipo de cara:", font=("Arial", 16)).pack(pady=20)
 
-    value = tk.BooleanVar()
+      value = tk.BooleanVar()
+      button_frame = tk.Frame(root)
+      button_frame.pack(side="top", pady=20)
 
-    button_frame = tk.Frame(root)
-    button_frame.pack(side="top", pady=20)
+      happy_face = Image.open("imagen1.gif")
+      sad_face = Image.open("imagen2.gif")
 
-    image = Image.open("imagen1.jpg").resize((100, 100))
-    photo = ImageTk.PhotoImage(image)
-    image2 = Image.open("imagen2.jpg").resize((100, 100))
-    photo2 = ImageTk.PhotoImage(image2)
+      happy = [ImageTk.PhotoImage(f.copy().resize((100, 100), Image.Resampling.LANCZOS))for f in ImageSequence.Iterator(happy_face)]
+      sad = [ImageTk.PhotoImage(i.copy().resize((100, 100), Image.Resampling.LANCZOS)) for i in ImageSequence.Iterator(sad_face)]
 
-    button1 = tk.Button(button_frame, image=photo, command=lambda:(value.set(True), print(value.get())))
-    button1.pack(side="left", padx=10)
+      button1 = tk.Button(button_frame, command=lambda: (value.set(True), print(value.get())))
+      button1.pack(side="left", padx=10)
+      animate_happy(happy)
 
-    button2 = tk.Button(button_frame, image=photo2, command=lambda:(value.set(False), print(value.get())))
-    button2.pack(side="left", padx=10)
+      button2 = tk.Button(button_frame, command=lambda: (value.set(False), print(value.get())))
+      button2.pack(side="left", padx=10)
+      animate_sad(sad)
 
-    textbox = tk.Text(root, height=10, width=50)
-    textbox.pack(pady=10)
+      textbox = tk.Text(root, height=10, width=50)
+      textbox.pack(pady=10)
 
-    boton = tk.Button(root, text="Añadir", command=lambda: ask(table=table, selected_row=selected_row, name=name))
-    boton.pack(pady=10)
+      ttk.Button(root, text="Añadir", command=lambda: ask(table, selected_row, name)).pack(pady=10)
 
-    root.wait_window(root)
+      root.wait_window(root)
