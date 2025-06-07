@@ -18,30 +18,35 @@ def json_data():
     person = {
          "Alejandro": {
                   "faltas": [],
+                  "type" : [],
                   "day": [],
                   "emoji": [],
                   "name": "Alejandro"        
          },
          "Santiago": {
                   "faltas": [],
+                  "type" : [],
                   "day": [],
                   "emoji": [],
                   "name": "Santiago"
          },
          "Mateo": {
                   "faltas": [],
+                  "type" : [],
                   "day": [],
                   "emoji": [],
                   "name": "Mateo"
          },
          "Mirian": {
                   "faltas": [],
+                  "type" : [],
                   "day": [],
                   "emoji": [],
                   "name": "Mirian"
          },
          "Jonathan": {
                   "faltas": [],
+                  "type" : [],
                   "day": [],
                   "emoji": [],
                   "name": "Jonathan"
@@ -62,7 +67,15 @@ def date():
 def fault_details():
    return textbox.get("1.0", tk.END).strip()
 
+def json_save(name, type):
+      data[name]["faltas"].append(fault_details())
+      data[name]["type"].append(type)
+      data[name]["day"].append(date())
+      data[name]["emoji"].append(emoji)
+      print(type)
+
 def add_to_table(table, selected_row, name):
+      global data, emoji
       with open("person.json", "r", encoding="utf-8") as file:
             data = json.load(file)
       if data[name]["day"].count(date()):
@@ -74,34 +87,34 @@ def add_to_table(table, selected_row, name):
             values = list(info)
             emoji = "😃" if value.get() == True else "😞"
             values[date()] = emoji
+            if emoji == "😃": 
+                 json_save(name, type=1)
+            else:
+                  json_save(name, type=-1)
             table.item(selected_row, values=values)
-            data[name]["faltas"].append(fault_details())
-            data[name]["day"].append(date())
-            data[name]["emoji"].append(emoji)
+
             with open("person.json", "w", encoding="utf-8") as file:
                   json.dump(data, file, indent=4, ensure_ascii=False)
             print(Fore.GREEN + "✅ Datos añadidos a la tabla y guardados en el archivo JSON")
             messagebox.showinfo("Info", "Felicitacion añadida con éxito." if value.get() == True else "Falta añadida con éxito.")
 
-
 def ask(table, selected_row, name):
-      if fault_details() != "":
+      if fault_details() != "" and value.get() != None:
             if value.get() == True:
-                 answer = messagebox.askyesno("Felicitacion", f"¿Estás seguro de que quieres añadir una felicitacion: {fault_details()}?")
-                 if answer:
+                  answer = messagebox.askyesno("Felicitacion", f"¿Estás seguro de que quieres añadir una felicitacion: {fault_details()}?")
+                  if answer:
                         add_to_table(table, selected_row, name)
                         textbox.delete("1.0", tk.END)
                         return
-            else:
-                 answer = messagebox.askyesno("Falta", f"¿Estás seguro de que quieres añadir una falta: {fault_details()}?")
-                 if answer:
+            elif value.get() == False:
+                  answer = messagebox.askyesno("Falta", f"¿Estás seguro de que quieres añadir una falta: {fault_details()}?")
+                  if answer:
                         add_to_table(table, selected_row, name)
                         textbox.delete("1.0", tk.END)
                         return
       else:
-            messagebox.showerror("Error", "Por favor, escribe una falta o felicitacion antes de continuar.")
+            messagebox.showerror("Error", "Por favor, elige felicitacion o falta y escribe")
             return
-
 
 def animate_happy(happy, index=0):
       button1.configure(image=happy[index])
@@ -110,9 +123,8 @@ def animate_happy(happy, index=0):
 def animate_sad(sad, index=0):
      button2.configure(image=sad[index])
      index = (index + 1) % len(sad)
-     root.after(25, animate_sad, sad, index)
+     root.after(35, animate_sad, sad, index)
 
-      
 def terminal(table, selected_row, name):        
       global textbox, root, value, button1, button2, happy, sad
       root = ttk.Toplevel()
@@ -143,6 +155,7 @@ def terminal(table, selected_row, name):
       textbox = tk.Text(root, height=10, width=50)
       textbox.pack(pady=10)
 
-      ttk.Button(root, text="Añadir", command=lambda: ask(table, selected_row, name)).pack(pady=10)
+      button_ask = ttk.Button(root, text="Añadir", command=lambda: ask(table, selected_row, name))
+      button_ask.pack(pady=10)
 
       root.wait_window(root)
