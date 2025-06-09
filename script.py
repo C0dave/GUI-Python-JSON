@@ -29,11 +29,9 @@ def row_selection(event):
     
 def main_window():
     global root, table
-    if lib.date() == 6 or lib.date() == 7:
-        messagebox.showinfo("Información", "Hoy es fin de semana, no se pueden registrar faltas ni felicitaciones ")
-        return
     if not os.path.exists("person.json"):
-        lib.json_data() 
+        lib.json_data()
+ 
     root = ttk.Window()
     style()
     root.title("Ventana Principal")
@@ -62,10 +60,13 @@ def main_window():
             table.item(p, values=value)
 
     table.pack(padx=20)
-
     table.bind("<ButtonRelease-1>", row_selection)
+    if lib.date() in [6,7]:
+        root.withdraw()
+        lib.show_winner_loser()
+        root.deiconify()
 
     root.mainloop()
 
 if __name__ == "__main__":
-    main_window()
+    main_window()  
