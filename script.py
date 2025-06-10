@@ -61,9 +61,10 @@ def main_window():
 
     table.pack(padx=20)
     table.bind("<ButtonRelease-1>", row_selection)
-    if lib.date() in [6,7]:
+    if lib.date() in [6, 7] and data != []:
         root.withdraw()
-        lib.show_winner_loser()
+        lib.show_winner()
+        lib.show_loser()
         root.deiconify()
 
     root.mainloop()
