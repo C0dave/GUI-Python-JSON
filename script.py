@@ -77,8 +77,21 @@ def main_window():
 
     with open("person.json", "r", encoding="utf-8") as file:
         data = json.load(file)
-    for person in data:
-        table.insert("", "end", iid=person, values=(data[person]["name"], "", "", "", "", ""))
+    
+    if lib.libmethods.date() in [6, 7] and data != []:
+        root.withdraw()
+        lib.weekend.show_winner()
+        lib.weekend.show_loser()
+        root.deiconify()
+    elif lib.libmethods.date() == 1:
+        for subject in lib.important_variables.subject:
+            for inner_key in lib.important_variables.inner_keys:
+                lib.json_methods.json_del_all(data, subject, inner_key)
+                with open("person.json", "w", encoding="utf-8") as file:
+                    json.dump(data, file, indent=4, ensure_ascii=False)
+
+    for subject in lib.important_variables.subject:
+        table.insert("", "end", iid=subject, values=(data[subject]["name"], "", "", "", "", ""))
 
     for p in data:
         for d, e in zip(data[p]["day"], data[p]["emoji"]):
@@ -90,12 +103,7 @@ def main_window():
 
     table.pack(padx=20)
     table.bind("<ButtonRelease-1>", row_selection)
-    if lib.libmethods.date() in [6, 7] and data != []:
-        root.withdraw()
-        lib.weekend.show_winner()
-        lib.weekend.show_loser()
-        root.deiconify()
-    
+
     root.mainloop()
 
 if __name__ == "__main__":

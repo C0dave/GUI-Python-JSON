@@ -9,7 +9,7 @@ import random
 
 class important_variables:
       subject = ["Alejandro", "Santiago", "Mateo", "Mirian", "Jonathan"]
-      inner_keys = ["drafting", "type", "day", "emoji", "name"]
+      inner_keys = ["name", "drafting", "type", "day", "emoji"]
       
 class libmethods:
       def date():
@@ -29,7 +29,8 @@ class add_and_ask:
             with open("person.json", "r", encoding="utf-8") as file:
                   data = json.load(file)
             if data[name]["day"].count(libmethods.date()):
-                  answer = messagebox.askyesno("Advertencia", f"Ya existe una felicitacion. Detalles:\nTipo: Felicitacion({data[name]["emoji"][index]})\nRedaccion: {data[name]["drafting"][index]}\n¿Quieres reemplazarla?" if data[name]["type"][index] else f"Ya existe una falta. Detalles:\nTipo: Falta({data[name]["emoji"][important_variables.index]})\nRedaccion: {data[name]["drafting"][index]}\n¿Quieres reemplazarla?")
+                  index = data[name]["day"].index(libmethods.date())
+                  answer = messagebox.askyesno("Advertencia", f"Ya existe una felicitacion. Detalles:\nTipo: Felicitacion({data[name]["emoji"][index]})\nRedaccion: {data[name]["drafting"][index]}\n¿Quieres reemplazarla?" if data[name]["type"][index] else f"Ya existe una falta. Detalles:\nTipo: Falta({data[name]["emoji"][index]})\nRedaccion: {data[name]["drafting"][index]}\n¿Quieres reemplazarla?")
                   if answer:
                         index = data[name]["day"].index(libmethods.date())
                         json_methods.json_del(name, index, data)
@@ -85,7 +86,13 @@ class json_methods:
             data[name]["day"].append(libmethods.date())
             data[name]["emoji"].append(emoji)
             print(tipe)
+      def json_del_all(data, subject, inner_key):
+            if inner_key == "name":
+                        return
+            if data[subject][inner_key]:
+                  data[subject][inner_key].pop()
 
+      
 class Gifs:
       gif_happy = [ImageTk.PhotoImage(gh.copy().resize((100, 100), Image.Resampling.LANCZOS)) for gh in ImageSequence.Iterator(Image.open("happy.gif"))]
       gif_sad = [ImageTk.PhotoImage(gs.copy().resize((100, 100), Image.Resampling.LANCZOS)) for gs in ImageSequence.Iterator(Image.open("sad.gif"))]
