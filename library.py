@@ -13,15 +13,13 @@ class important_variables:
       
 class libmethods:
       def date():
-            day = datetime.datetime.now().weekday() + 1
-            return day
+            return datetime.datetime.now().weekday() + 1
+
       def fault_details(textbox):
             return textbox.get("1.0", tk.END).strip()
       
 class add_and_ask:
       def add_to_table(table, selected_row, name, value, textbox):
-            global emoji
-            init(autoreset=True)
             info = table.item(selected_row, "values")
             values = list(info)
             emoji = "😃" if value.get() == True else "😞"
@@ -34,34 +32,29 @@ class add_and_ask:
                   if answer:
                         index = data[name]["day"].index(libmethods.date())
                         json_methods.json_del(name, index, data)
-                        json_methods.json_save(name, data, textbox, tipe= 1 if emoji == "😃" else -1)
+                        json_methods.json_save(name, data, textbox, tipe= 1 if emoji == "😃" else -1, emoji=emoji)
                         messagebox.showinfo("Info", "Felicitacion reemplazada!" if data[name]["emoji"][index] else "Falta reemplazada!")
                         table.item(selected_row, values=values)
                   else:
                         messagebox.showerror("Error", "Accion interrupida por el usuario")
                         return
             elif emoji:
-                        json_methods.json_save(name, data, textbox, tipe=1 if emoji == "😃" else -1)
+                        json_methods.json_save(name, data, textbox, tipe=1 if emoji == "😃" else -1, emoji=emoji)
                         table.item(selected_row, values=values)
 
             with open("person.json", "w", encoding="utf-8") as file:
                   json.dump(data, file, indent=4, ensure_ascii=False)
-                  messagebox.showinfo("Info", "Felicitacion añadida con éxito." if value.get() == True else "Falta añadida con éxito.")
+            messagebox.showinfo("Info", "Felicitacion añadida con éxito." if value.get() == True else "Falta añadida con éxito.")
       
       def ask(table, selected_row, name, textbox, value):
             if libmethods.fault_details(textbox) != "" and value.get() != None:
-                  if value.get() == True:
-                        answer = messagebox.askyesno("Felicitacion", f"¿Estás seguro de que quieres añadir una felicitacion: {libmethods.fault_details(textbox)}?")
-                        if answer:
-                              add_and_ask.add_to_table(table, selected_row, name, value, textbox)
-                              textbox.delete("1.0", tk.END)
-                              return
-                  elif value.get() == False:
-                        answer = messagebox.askyesno("Falta", f"¿Estás seguro de que quieres añadir una falta: {libmethods.fault_details(textbox)}?")
-                        if answer:
-                              add_and_ask.add_to_table(table, selected_row, name, value, textbox)
-                              textbox.delete("1.0", tk.END)
-                              return
+                  title = ("Felicitacion" if value.get() == True else "Falta")
+                  message = (f"¿Estás seguro de que quieres añadir la felicitacion: {libmethods.fault_details(textbox)}?" if value.get() == True else f"¿Estás seguro de que quieres añadir la falta: {libmethods.fault_details(textbox)}?")
+                  answer = messagebox.askyesno(title, message)
+                  if answer:
+                        add_and_ask.add_to_table(table, selected_row, name, value, textbox)
+                        textbox.delete("1.0", tk.END)
+                        return
             else:
                   messagebox.showerror("Error", "Por favor, elige felicitacion o falta y escribe")
                   return
@@ -69,10 +62,10 @@ class add_and_ask:
 class json_methods:
       def json_data():
             init(autoreset=True)
-            person = {s: {ik:s if ik == "name" else [] for ik in important_variables.inner_keys} for s in important_variables.subject}
+            person = {subject: {inner_keys:subject if inner_keys == "name" else [] for inner_keys in important_variables.inner_keys} if subject != "Validation" else False for subject in important_variables.subject}
             with open("person.json", "w", encoding="utf-8") as file:
                   json.dump(person, file, indent=4, ensure_ascii=False)
-            print(Fore.GREEN + "✅ Archivo JSON creado con éxito")
+            print(Fore.GREEN + "✅ Archivo JSON creado con éxito" if libmethods.date() != 1 else Fore.RED + "JSON borrado(Fin de semana)")
 
       def json_del(name, index, data):
             data[name]["day"].pop(index)
@@ -80,19 +73,13 @@ class json_methods:
             data[name]["drafting"].pop(index)
             data[name]["emoji"].pop(index)
 
-      def json_save(name, data, textbox, tipe):
+      def json_save(name, data, textbox, tipe, emoji):
             data[name]["drafting"].append(libmethods.fault_details(textbox))
             data[name]["type"].append(tipe)
             data[name]["day"].append(libmethods.date())
             data[name]["emoji"].append(emoji)
-            print(tipe)
-      def json_del_all(data, subject, inner_key):
-            if inner_key == "name":
-                        return
-            if data[subject][inner_key]:
-                  data[subject][inner_key].pop()
+            print(tipe, emoji)
 
-      
 class Gifs:
       gif_happy = [ImageTk.PhotoImage(gh.copy().resize((100, 100), Image.Resampling.LANCZOS)) for gh in ImageSequence.Iterator(Image.open("happy.gif"))]
       gif_sad = [ImageTk.PhotoImage(gs.copy().resize((100, 100), Image.Resampling.LANCZOS)) for gs in ImageSequence.Iterator(Image.open("sad.gif"))]
@@ -107,7 +94,7 @@ class animation:
             index = (index + 1) % len(gif)
             window.after(duration, animation.animate_emoji, window, gif, type_widget, duration, index)
       
-      def animate_bg(window, gif, type_widget, bg, bg_emoji,index=0):
+      def animate_bg(window, gif, type_widget, bg, bg_emoji, index=0):
             colors = ['red', 'green', 'blue', 'orange', 'purple', 'yellow', 'cyan', 'magenta', 'white']
             fonts = ["Arial", "Helvetica", "Times New Roman", "Courier New", "Verdana", "Comic Sans MS", "Georgia", "Trebuchet MS", "Lucida Console", "Tahoma", "Segoe UI", "System"]
             sizes = list(range(10, 30))
@@ -117,11 +104,7 @@ class animation:
             size_random = random.choice(sizes)
             bg.configure(image=gif[index])
             bg_emoji.configure(background=backcolor_random)
-            type_widget.configure(
-                  background=backcolor_random,
-                  foreground=color_random,
-                  font=(font_random, size_random)
-            )
+            type_widget.configure(background=backcolor_random, foreground=color_random, font=(font_random, size_random))
             window.after(100, animation.animate_bg, window, gif, type_widget, bg, bg_emoji, (index + 1) % len(gif))
 
 class weekend:

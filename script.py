@@ -3,6 +3,7 @@ import ttkbootstrap as ttk
 import json
 import os
 from ttkbootstrap import Style
+import tkinter.messagebox as messabox
 
 def launch_terminal(selected_row, name):
     root.withdraw() 
@@ -17,6 +18,10 @@ def style():
     return style
 
 def row_selection(event):
+    import library as lib
+    if lib.libmethods.date() == 6:
+        messabox.showinfo("info", "No se puede ingresar felicitaciones o faltas el dia sabado")
+        return
     selected_row = table.focus()
     if selected_row:
         name = table.item(selected_row, "values")
@@ -62,47 +67,46 @@ def main_window():
     import library as lib
     if not os.path.exists("person.json"):
         lib.json_methods.json_data()
-    style()
     root.title("Ventana Principal")
     root.geometry("700x600")    
     root.resizable(False, False)
     label = ttk.Label(root, text="Bienvenido a faltas semanales", font=("", 20), anchor="center")
     label.pack(pady=20)
+    style()
 
     table = ttk.Treeview(root, columns=("Nombre", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes"), show="headings")
-    for col in table["columns"]:
-        table.heading(col, text=col)
-        table.column(col, anchor="center", width=100)
+    for columns in table["columns"]:
+        table.heading(columns, text=columns)
+        table.column(columns, anchor="center", width=100)
     table.pack(pady=20)
 
     with open("person.json", "r", encoding="utf-8") as file:
         data = json.load(file)
     
-    if lib.libmethods.date() in [6, 7] and data != []:
+    for subject in lib.important_variables.subject:
+        table.insert("", "end", iid=subject, values=(data[subject]["name"], "", "", "", "", ""))
+
+    for subject in data:
+        for day, emoji in zip(data[subject]["day"], data[subject]["emoji"]):
+            if day == []:
+                continue
+            value = list(table.item(subject, "values"))
+            value[day] = emoji
+            table.item(subject, values=value)
+
+    table.pack(padx=20)
+    table.bind("<ButtonRelease-1>", row_selection)
+
+    if lib.libmethods.date() == 6:
         root.withdraw()
         lib.weekend.show_winner()
         lib.weekend.show_loser()
         root.deiconify()
-    elif lib.libmethods.date() == 1:
-        for subject in lib.important_variables.subject:
-            for inner_key in lib.important_variables.inner_keys:
-                lib.json_methods.json_del_all(data, subject, inner_key)
-                with open("person.json", "w", encoding="utf-8") as file:
-                    json.dump(data, file, indent=4, ensure_ascii=False)
-
-    for subject in lib.important_variables.subject:
-        table.insert("", "end", iid=subject, values=(data[subject]["name"], "", "", "", "", ""))
-
-    for p in data:
-        for d, e in zip(data[p]["day"], data[p]["emoji"]):
-            if d == []:
-                continue
-            value = list(table.item(p, "values"))
-            value[d] = e
-            table.item(p, values=value)
-
-    table.pack(padx=20)
-    table.bind("<ButtonRelease-1>", row_selection)
+    elif lib.libmethods.date() == 7:
+        root.withdraw()
+        lib.json_methods.json_data()
+        messabox.showinfo("Info", "Es domingo no se puede acceder(JSON borrado)")
+        return
 
     root.mainloop()
 
