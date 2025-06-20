@@ -3,7 +3,7 @@ import ttkbootstrap as ttk
 import json
 import os
 from ttkbootstrap import Style
-import tkinter.messagebox as messabox
+import tkinter.messagebox as messagebox
 
 def launch_terminal(selected_row, name):
     root.withdraw() 
@@ -20,7 +20,7 @@ def style():
 def row_selection(event):
     import library as lib
     if lib.important_variables.date == 6:
-        messabox.showinfo("info", "No se puede ingresar felicitaciones o faltas el dia sabado")
+        messagebox.showinfo("info", "No se puede ingresar felicitaciones o faltas el dia sabado")
         return
     selected_row = table.focus()
     if selected_row:
@@ -105,7 +105,7 @@ def main_window():
     elif lib.important_variables.date == 7:
         root.withdraw()
         lib.json_methods.json_data()
-        messabox.showinfo("Info", "Es domingo no se puede acceder(JSON borrado)")
+        messagebox.showinfo("Info", "Es domingo no se puede acceder(JSON borrado)")
         return
 
     root.mainloop()
