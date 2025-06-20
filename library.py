@@ -10,36 +10,31 @@ import random
 class important_variables:
       subject = ["Alejandro", "Santiago", "Mateo", "Mirian", "Jonathan"]
       inner_keys = ["name", "drafting", "type", "day", "emoji"]
-      
-class libmethods:
-      def date():
-            return datetime.datetime.now().weekday() + 1
-
-      def fault_details(textbox):
-            return textbox.get("1.0", tk.END).strip()
+      date = datetime.datetime.now().weekday() + 1   
+      def __init__(self, drafting_details):
+            self.drafting_details = drafting_details
       
 class add_and_ask:
-      def add_to_table(table, selected_row, name, value, textbox):
+      def add_to_table(table, selected_row, name, value, draf):
+            with open("person.json", "r", encoding="utf-8") as file:
+                  data = json.load(file)
             info = table.item(selected_row, "values")
             values = list(info)
             emoji = "😃" if value.get() == True else "😞"
-            values[libmethods.date()] = emoji
-            with open("person.json", "r", encoding="utf-8") as file:
-                  data = json.load(file)
-            if data[name]["day"].count(libmethods.date()):
-                  index = data[name]["day"].index(libmethods.date())
+            values[important_variables.date] = emoji
+            if data[name]["day"].count(important_variables.date):
+                  index = data[name]["day"].index(important_variables.date)
                   answer = messagebox.askyesno("Advertencia", f"Ya existe una felicitacion. Detalles:\nTipo: Felicitacion({data[name]["emoji"][index]})\nRedaccion: {data[name]["drafting"][index]}\n¿Quieres reemplazarla?" if data[name]["type"][index] else f"Ya existe una falta. Detalles:\nTipo: Falta({data[name]["emoji"][index]})\nRedaccion: {data[name]["drafting"][index]}\n¿Quieres reemplazarla?")
                   if answer:
-                        index = data[name]["day"].index(libmethods.date())
                         json_methods.json_del(name, index, data)
-                        json_methods.json_save(name, data, textbox, tipe= 1 if emoji == "😃" else -1, emoji=emoji)
+                        json_methods.json_save(name, data, draf.drafting_details, emoji, tipe=1 if emoji == "😃" else -1)
                         messagebox.showinfo("Info", "Felicitacion reemplazada!" if data[name]["emoji"][index] else "Falta reemplazada!")
                         table.item(selected_row, values=values)
                   else:
                         messagebox.showerror("Error", "Accion interrupida por el usuario")
                         return
             elif emoji:
-                        json_methods.json_save(name, data, textbox, tipe=1 if emoji == "😃" else -1, emoji=emoji)
+                        json_methods.json_save(name, data, draf.drafting_details, emoji, tipe=1 if emoji == "😃" else -1)
                         table.item(selected_row, values=values)
 
             with open("person.json", "w", encoding="utf-8") as file:
@@ -47,12 +42,13 @@ class add_and_ask:
             messagebox.showinfo("Info", "Felicitacion añadida con éxito." if value.get() == True else "Falta añadida con éxito.")
       
       def ask(table, selected_row, name, textbox, value):
-            if libmethods.fault_details(textbox) != "" and value.get() != None:
+            draf = important_variables(textbox.get("1.0", tk.END).strip())
+            if draf.drafting_details != "" and value.get() != None:
                   title = ("Felicitacion" if value.get() == True else "Falta")
-                  message = (f"¿Estás seguro de que quieres añadir la felicitacion: {libmethods.fault_details(textbox)}?" if value.get() == True else f"¿Estás seguro de que quieres añadir la falta: {libmethods.fault_details(textbox)}?")
+                  message = (f"¿Estás seguro de que quieres añadir la felicitacion: {draf.drafting_details}?" if value.get() == True else f"¿Estás seguro de que quieres añadir la falta: {draf.drafting_details}?")
                   answer = messagebox.askyesno(title, message)
                   if answer:
-                        add_and_ask.add_to_table(table, selected_row, name, value, textbox)
+                        add_and_ask.add_to_table(table, selected_row, name, value, draf)
                         textbox.delete("1.0", tk.END)
                         return
             else:
@@ -65,7 +61,7 @@ class json_methods:
             person = {subject: {inner_keys:subject if inner_keys == "name" else [] for inner_keys in important_variables.inner_keys} if subject != "Validation" else False for subject in important_variables.subject}
             with open("person.json", "w", encoding="utf-8") as file:
                   json.dump(person, file, indent=4, ensure_ascii=False)
-            print(Fore.GREEN + "✅ Archivo JSON creado con éxito" if libmethods.date() != 1 else Fore.RED + "JSON borrado(Fin de semana)")
+            print(Fore.GREEN + "✅ Archivo JSON creado con éxito" if important_variables.date != 1 else Fore.RED + "JSON borrado(Fin de semana)")
 
       def json_del(name, index, data):
             data[name]["day"].pop(index)
@@ -73,10 +69,10 @@ class json_methods:
             data[name]["drafting"].pop(index)
             data[name]["emoji"].pop(index)
 
-      def json_save(name, data, textbox, tipe, emoji):
-            data[name]["drafting"].append(libmethods.fault_details(textbox))
+      def json_save(name, data, draf, emoji, tipe):
+            data[name]["drafting"].append(draf)
             data[name]["type"].append(tipe)
-            data[name]["day"].append(libmethods.date())
+            data[name]["day"].append(important_variables.date)
             data[name]["emoji"].append(emoji)
             print(tipe, emoji)
 

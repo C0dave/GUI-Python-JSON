@@ -19,7 +19,7 @@ def style():
 
 def row_selection(event):
     import library as lib
-    if lib.libmethods.date() == 6:
+    if lib.important_variables.date == 6:
         messabox.showinfo("info", "No se puede ingresar felicitaciones o faltas el dia sabado")
         return
     selected_row = table.focus()
@@ -97,12 +97,12 @@ def main_window():
     table.pack(padx=20)
     table.bind("<ButtonRelease-1>", row_selection)
 
-    if lib.libmethods.date() == 6:
+    if lib.important_variables.date == 6:
         root.withdraw()
         lib.weekend.show_winner()
         lib.weekend.show_loser()
         root.deiconify()
-    elif lib.libmethods.date() == 7:
+    elif lib.important_variables.date == 7:
         root.withdraw()
         lib.json_methods.json_data()
         messabox.showinfo("Info", "Es domingo no se puede acceder(JSON borrado)")
